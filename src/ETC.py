@@ -13,7 +13,10 @@ class ETC:
 
         self.means = avg  # true means of the arms
         self.m = explore_steps  # num of explore steps per arm
+
         self.num_arms = avg.size  # num arms (k)
+        self.explore_horizon = self.m * self.num_arms
+
         self.best_arm = np.argmax(avg)  # True best arm
 
         self.arm_ix = None
@@ -29,10 +32,7 @@ class ETC:
         # For each time index, find the best arm according to ETC.
         return np.argmax(self.emp_means)
 
-    def update_stats(self, rew, arm):
-        pass
-
-    def update_reg(self, rew_vec):
+    def update_stats(self, rew_vec):
         ni = self.num_pulls[self.arm_ix]
 
         # genie plays best arm
@@ -54,14 +54,14 @@ class ETC:
         # Explore Phase - Round Robin
         rew_vec = self.get_reward()
 
-        if self.time < self.m * self.num_arms:
-            self.arm_ix = self.time % self.m
+        if self.time < self.explore_horizon:
+            self.arm_ix = self.num_arms % self.m
 
-        elif self.time == self.m * self.num_arms:
+        elif self.time == self.explore_horizon:
             # calculate best arm explored empirical
             self.arm_ix = self.get_best_arm()
 
-        self.update_stats(rew=rew_vec, arm=self.arm_ix)
+        self.update_stats(rew_vec=rew_vec)
 
 
 def run(avg, explore_steps, iterations, num_repeat):
