@@ -72,9 +72,8 @@ def run(avg, explore_steps, iterations, num_repeat):
     for j in range(num_repeat):
         for t in range(iterations - 1):
             etc.iterate()
-        etc.restart()
-
         regret[j, :] = np.asarray(etc.cum_regret)
+        etc.restart()
 
     return regret
 
@@ -82,7 +81,7 @@ def run(avg, explore_steps, iterations, num_repeat):
 if __name__ == '__main__':
     mu = np.asarray([0.6, 0.9, 0.95, 0.8, 0.7, 0.3])
     num_iter, num_inst = int(1e4), 30
-    m = 2
+    m = 2000
     reg = run(avg=mu,
               explore_steps=m,
               iterations=num_iter,
