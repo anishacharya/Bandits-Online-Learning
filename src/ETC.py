@@ -11,7 +11,7 @@ class ETC:
         self.m = explore_steps  # num of explore steps per arm
 
         self.time = 0
-        self.cum_regret = 0
+        self.regret = []
 
         self.emp_means = np.zeros_like(self.true_means)  # empirical means of arms
         self.num_pulls = np.zeros_like(self.true_means)  # number of times that arm i has been pulled
@@ -26,9 +26,10 @@ class ETC:
     def restart(self):
         # Reset counters
         self.time = 0
-        self.cum_regret = 0
+        self.regret = []
         self.emp_means = np.zeros_like(self.true_means)
         self.num_pulls = np.zeros_like(self.true_means)
+        self.arm_ix = None
 
     def get_best_arm(self):
         # For each time index, find the best arm according to ETC.
@@ -40,7 +41,7 @@ class ETC:
         # genie plays best arm
         genie_rew = rew_vec[self.best_arm]
         player_rew = rew_vec[self.arm_ix]
-        self.cum_regret += (genie_rew - player_rew)
+        self.regret.append((genie_rew - player_rew))
 
         if self.time < self.m * self.num_arms:
             # keep online average
@@ -53,10 +54,10 @@ class ETC:
         return self.true_means + np.random.normal(len(self.true_means))
 
     def iterate(self):
-        # Explore Phase - Round Robin
         rew_vec = self.get_reward()
 
         if self.time < self.explore_horizon:
+            # Explore Phase - Round Robin
             self.arm_ix = self.time % self.num_arms
 
         elif self.time == self.explore_horizon:
@@ -70,9 +71,9 @@ def run(avg, explore_steps, iterations, num_repeat):
     regret = np.zeros((num_repeat, iterations))
     etc = ETC(avg=avg, explore_steps=explore_steps)
     for j in range(num_repeat):
-        for t in range(iterations - 1):
+        for t in range(iterations):
             etc.iterate()
-        regret[j, :] = np.asarray(etc.cum_regret)
+        regret[j, :] = np.asarray(etc.regret)
         etc.restart()
 
     return regret
@@ -81,7 +82,7 @@ def run(avg, explore_steps, iterations, num_repeat):
 if __name__ == '__main__':
     mu = np.asarray([0.6, 0.9, 0.95, 0.8, 0.7, 0.3])
     num_iter, num_inst = int(1e4), 30
-    m = 2000
+    m = 2
     reg = run(avg=mu,
               explore_steps=m,
               iterations=num_iter,
@@ -95,6 +96,6 @@ if __name__ == '__main__':
 
     x = np.arange(len(mean_runs))
     plt.plot(x, mean_runs, color='b')
-    plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5, color='b')
+    # plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5, color='b')
 
     plt.show()
