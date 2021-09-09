@@ -7,18 +7,19 @@ import matplotlib.pyplot as plt
 class ETC:
     def __init__(self, avg: np.ndarray, explore_steps: int):
 
+        self.true_means = avg  # true means of the arms
+        self.m = explore_steps  # num of explore steps per arm
+
         self.time = 0
         self.cum_regret = 0
-        self.emp_means = np.zeros_like(avg)  # empirical means of arms
-        self.num_pulls = np.zeros_like(avg)  # number of times that arm i has been pulled
 
-        self.means = avg  # true means of the arms
-        self.m = explore_steps  # num of explore steps per arm
+        self.emp_means = np.zeros_like(self.true_means)  # empirical means of arms
+        self.num_pulls = np.zeros_like(self.true_means)  # number of times that arm i has been pulled
 
         self.num_arms = avg.size  # num arms (k)
         self.explore_horizon = self.m * self.num_arms
 
-        self.best_arm = np.argmax(avg)  # True best arm
+        self.best_arm = int(np.argmax(self.true_means))  # True best arm
 
         self.arm_ix = None
 
@@ -26,8 +27,8 @@ class ETC:
         # Reset counters
         self.time = 0
         self.cum_regret = 0
-        self.emp_means = np.zeros_like(self.means)
-        self.num_pulls = np.zeros_like(self.means)
+        self.emp_means = np.zeros_like(self.true_means)
+        self.num_pulls = np.zeros_like(self.true_means)
 
     def get_best_arm(self):
         # For each time index, find the best arm according to ETC.
@@ -49,14 +50,14 @@ class ETC:
         self.time += 1
 
     def get_reward(self):
-        return self.means + np.random.normal(len(self.means))
+        return self.true_means + np.random.normal(len(self.true_means))
 
     def iterate(self):
         # Explore Phase - Round Robin
         rew_vec = self.get_reward()
 
         if self.time < self.explore_horizon:
-            self.arm_ix = self.num_arms % self.m
+            self.arm_ix = self.time % self.num_arms
 
         elif self.time == self.explore_horizon:
             # calculate best arm explored empirical
