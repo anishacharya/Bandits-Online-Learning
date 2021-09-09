@@ -1,6 +1,7 @@
 import numpy as np
 import pickle
 import math
+import matplotlib.pyplot as plt
 
 
 class ETC:
@@ -85,3 +86,15 @@ if __name__ == '__main__':
               explore_steps=m,
               iterations=num_iter,
               num_repeat=num_inst)
+
+    mean_runs = np.mean(reg, axis=0)
+    std_runs = np.std(reg, axis=0)
+
+    UB = mean_runs + 1 * std_runs
+    LB = mean_runs - 1 * std_runs
+
+    x = np.arange(len(mean_runs))
+    plt.plot(x, mean_runs, color='b')
+    plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5, color='b')
+
+    plt.show()
