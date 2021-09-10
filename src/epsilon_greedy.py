@@ -34,7 +34,7 @@ class EpsilonGreedy:
         # For each time index, find the best arm according to ETC.
         return np.argmax(self.emp_means)
 
-    def update_stats(self, rew_vec, explore_flag):
+    def update_stats(self, rew_vec):
         ni = self.num_pulls[self.arm_ix]
 
         # genie plays best arm
@@ -42,10 +42,10 @@ class EpsilonGreedy:
         player_rew = rew_vec[self.arm_ix]
         self.regret.append((genie_rew - player_rew))
 
-        if explore_flag == 1:
-            # keep online average
-            self.emp_means[self.arm_ix] = self.emp_means[self.arm_ix] * (ni / (ni + 1)) + player_rew / (ni + 1)
-            self.num_pulls[self.arm_ix] += 1
+        # if explore_flag == 1:
+        # keep online average
+        self.emp_means[self.arm_ix] = self.emp_means[self.arm_ix] * (ni / (ni + 1)) + player_rew / (ni + 1)
+        self.num_pulls[self.arm_ix] += 1
 
         self.time += 1
 
@@ -57,30 +57,29 @@ class EpsilonGreedy:
 
         if self.time < self.num_arms:
             # Pure explore Phase - Round Robin for 1 round
-            self.arm_ix = self.time % self.num_arms
+            self.arm_ix = self.time
             explore = 1
 
         else:
             # toss a coin
-            epsilon = self.C * self.num_arms / (self.time * self.delta_min ** 2)
+            epsilon = min(1, (self.C * self.num_arms) / (self.time * self.delta_min ** 2))
             explore = np.random.binomial(n=1, p=epsilon)
 
             if explore == 1:
                 # case-1 explore
                 # choose an arm uniformly at random
-                self.arm_ix = np.random.randint(low=0, high=self.num_arms+1)
+                self.arm_ix = np.random.randint(low=0, high=self.num_arms)
             else:
                 # case-2 exploit
                 self.arm_ix = self.get_best_arm()
 
-        self.update_stats(rew_vec=rew_vec, explore_flag=explore)
+        self.update_stats(rew_vec=rew_vec)
 
 
 def run(avg, iterations, num_repeat):
     regret = np.zeros((num_repeat, iterations))
     etc = EpsilonGreedy(avg=avg)
     for j in range(num_repeat):
-        np.random.seed(j)
         for t in range(iterations):
             etc.iterate()
 
@@ -95,8 +94,6 @@ if __name__ == '__main__':
     mu = np.asarray([0.96, 0.7, 0.5, 0.6, 0.1])
     num_iter, num_inst = int(1e4), 10
 
-    delta = 0.2
-    m = max(1, math.ceil((4 / delta ** 2) * math.log(num_iter * (delta ** 2 / 4))))
     reg = run(avg=mu,
               iterations=num_iter,
               num_repeat=num_inst)
@@ -109,10 +106,10 @@ if __name__ == '__main__':
 
     x = np.arange(len(mean_runs))
     plt.plot(x, mean_runs, color='b')
-    plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5, color='b')
+    # plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5, color='b')
 
-    plt.vlines(x=m * len(mu), ymin=0, ymax=1000, linestyle='dashed', color='k')
     plt.xlabel('Time', fontsize=10)
     plt.ylabel('Cumulative Regret', fontsize=10)
+    plt.xscale('log')
     plt.grid(True, which='both', linestyle='--')
     plt.show()
