@@ -1,5 +1,4 @@
 import numpy as np
-import pickle
 import math
 import matplotlib.pyplot as plt
 
@@ -51,7 +50,7 @@ class ETC:
         self.time += 1
 
     def get_reward(self):
-        return self.true_means + np.random.normal(len(self.true_means))
+        return self.true_means + np.random.normal(0, 1, np.shape(self.true_means))
 
     def iterate(self):
         rew_vec = self.get_reward()
@@ -71,9 +70,12 @@ def run(avg, explore_steps, iterations, num_repeat):
     regret = np.zeros((num_repeat, iterations))
     etc = ETC(avg=avg, explore_steps=explore_steps)
     for j in range(num_repeat):
+        np.random.seed(j)
         for t in range(iterations):
             etc.iterate()
-        regret[j, :] = np.asarray(etc.regret)
+
+        # calculate cumulative regret
+        regret[j, :] = np.cumsum(np.asarray(etc.regret))
         etc.restart()
 
     return regret
@@ -82,7 +84,9 @@ def run(avg, explore_steps, iterations, num_repeat):
 if __name__ == '__main__':
     mu = np.asarray([0.6, 0.9, 0.95, 0.8, 0.7, 0.3])
     num_iter, num_inst = int(1e4), 30
-    m = 2
+
+    delta = 0.2
+    m = max(1, math.ceil((4 / delta ** 2) * math.log(num_iter * (delta ** 2 / 4))))
     reg = run(avg=mu,
               explore_steps=m,
               iterations=num_iter,
@@ -96,6 +100,10 @@ if __name__ == '__main__':
 
     x = np.arange(len(mean_runs))
     plt.plot(x, mean_runs, color='b')
-    # plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5, color='b')
-
+    plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5, color='b')
+    
+    plt.vlines(x=m*len(mu), ymin=0, ymax=1000, linestyle='dashed', color='k')
+    plt.xlabel('Time', fontsize=10)
+    plt.ylabel('Cumulative Regret', fontsize=10)
+    plt.grid(True, which='both', linestyle='--')
     plt.show()
