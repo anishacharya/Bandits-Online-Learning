@@ -15,7 +15,7 @@ class UCB:
         self.regret = []
         self.emp_means = np.zeros_like(self.true_means)  # empirical means of arms  \hat{\mu_j}
         self.num_pulls = np.zeros_like(self.true_means)  # number of times that arm i has been pulled T_j
-        self.ucb_arr = 1e5*np.ones_like(self.true_means)  # Upper confidence bounds i.e. U_j
+        self.ucb_arr = 1e5 * np.ones_like(self.true_means)  # Upper confidence bounds i.e. U_j
 
         self.arm_ix = None
 
@@ -26,7 +26,7 @@ class UCB:
 
         self.emp_means = np.zeros_like(self.true_means)
         self.num_pulls = np.zeros_like(self.true_means)
-        self.ucb_arr = 1e5*np.ones_like(self.true_means)
+        self.ucb_arr = 1e5 * np.ones_like(self.true_means)
 
         self.arm_ix = None
 
@@ -37,7 +37,9 @@ class UCB:
     def update_ucb(self):
         f = 1 + self.time * (np.log(self.time + 1) ** 2)
         for j in range(self.num_arms):
-            self.ucb_arr[j] = self.emp_means[j] + np.sqrt((2 * np.log(f)) / self.num_pulls[j])
+            # So that T[j-1] is not 0 ~ div by zero error else
+            nj = 1 if self.num_pulls[j] == 0 else self.num_pulls[j]
+            self.ucb_arr[j] = self.emp_means[j] + np.sqrt((2 * np.log(f)) / nj)
 
     def update_stats(self, rew_vec):
         # genie plays best arm
@@ -54,12 +56,13 @@ class UCB:
         return self.true_means + np.random.normal(0, 1, np.shape(self.true_means))
 
     def iterate(self):
-        if self.time < self.num_arms:
-            # So that T[j-1] is not 0 ~ div by zero error else
-            self.arm_ix = self.time
-        else:
-            self.update_ucb()
-            self.arm_ix = self.get_best_arm()
+        # if self.time < self.num_arms:
+        #     # So that T[j-1] is not 0 ~ div by zero error else
+        #     self.arm_ix = self.time
+        # else:
+        self.update_ucb()
+        self.arm_ix = self.get_best_arm()
+
         rew_vec = self.get_reward()
         self.update_stats(rew_vec=rew_vec)
 
@@ -97,8 +100,8 @@ if __name__ == '__main__':
     plt.plot(x, mean_runs, color='b')
     # plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5, color='b')
 
-    plt.xlabel('Time', fontsize=10)
+    plt.xlabel('Time (Log Scale)', fontsize=10)
     plt.ylabel('Cumulative Regret with UCB', fontsize=10)
-    # plt.yscale('log')
+    plt.xscale('log')
     plt.grid(True, which='both', linestyle='--')
     plt.show()
