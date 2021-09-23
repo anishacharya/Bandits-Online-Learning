@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-class EpsilonGreedy:
+class UCB:
     def __init__(self, avg: np.ndarray):
 
         self.true_means = avg  # true means of the arms
@@ -77,14 +77,14 @@ class EpsilonGreedy:
 
 def run(avg, iterations, num_repeat):
     regret = np.zeros((num_repeat, iterations))
-    etc = EpsilonGreedy(avg=avg)
+    ucb = UCB(avg=avg)
     for j in range(num_repeat):
         for t in range(iterations):
-            etc.iterate()
+            ucb.iterate()
 
         # calculate cumulative regret
-        regret[j, :] = np.cumsum(np.asarray(etc.regret))
-        etc.restart()
+        regret[j, :] = np.cumsum(np.asarray(ucb.regret))
+        ucb.restart()
 
     return regret
 
