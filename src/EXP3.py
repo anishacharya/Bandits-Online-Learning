@@ -9,7 +9,7 @@ class EXP3:
         self.best_arm = int(np.argmax(self.true_means))  # True best arm
 
         self.time = 0
-        self.regret = []
+        self.cum_regret = [0.0] * self.num_arms                 # S_t,j = initialize to zero
         self.prob_arms = [1.0 / self.num_arms] * self.num_arms  # P_t,j = initialize uniformly
 
         self.arm_ix = None
@@ -17,8 +17,7 @@ class EXP3:
     def restart(self):
         # Reset counters
         self.time = 0
-        self.regret = []
-
+        self.cum_regret = [0.0] * self.num_arms                 # S_t,j = initialize to zero
         self.prob_arms = [1.0 / self.num_arms] * self.num_arms  # P_t,j = initialize uniformly
 
         self.arm_ix = None
@@ -62,15 +61,15 @@ class EXP3:
 
 def run(avg, iterations, num_repeat, eta, var):
     regret = np.zeros((num_repeat, iterations))
-    ucb = EXP3(avg=avg)
+    exp3 = EXP3(avg=avg)
 
     for j in range(num_repeat):
         for t in range(iterations):
-            ucb.iterate()
+            exp3.iterate()
 
         # calculate cumulative regret
-        regret[j, :] = np.cumsum(np.asarray(ucb.regret))
-        ucb.restart()
+        regret[j, :] = np.cumsum(np.asarray(exp3.regret))
+        exp3.restart()
 
     return regret
 
