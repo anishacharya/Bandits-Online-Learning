@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-class UCB:
+class EXP3:
     def __init__(self, avg: np.ndarray):
         self.true_means = avg  # true means of the arms
         self.num_arms = avg.size  # num arms (k)
@@ -69,7 +69,7 @@ class UCB:
 
 def run(avg, iterations, num_repeat, eta, var):
     regret = np.zeros((num_repeat, iterations))
-    ucb = UCB(avg=avg)
+    ucb = EXP3(avg=avg)
 
     for j in range(num_repeat):
         for t in range(iterations):
