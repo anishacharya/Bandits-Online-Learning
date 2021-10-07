@@ -32,10 +32,13 @@ class EXP3:
         self.P = exp_wt / sum(exp_wt)
 
     def update_stats(self, rew_vec):
-        # genie plays best arm
+        # update regret
         genie_rew = rew_vec[self.best_arm]
         player_rew = rew_vec[self.arm_ix]
         self.regret.append((genie_rew - player_rew))
+
+        # update S
+        self.S[self.arm_ix] += 1 - (1 - rew_vec[self.arm_ix]) / self.P[self.arm_ix]
 
         self.time += 1
 
