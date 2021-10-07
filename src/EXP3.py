@@ -14,8 +14,8 @@ class EXP3:
     def restart(self):
         # Reset counters
         self.time = 0
-        self.S = [0.0] * self.num_arms                 # S_t,j = initialize to zero
-        self.P = [1.0 / self.num_arms] * self.num_arms  # P_t,j = initialize uniformly
+        self.S = np.array([0.0] * self.num_arms)                 # S_t,j = initialize to zero
+        self.P = None                                            # P_t,j = initialized uniformly at t=0 by update_exp3()
         self.arm_ix = None
 
         self.regret = []
@@ -23,12 +23,12 @@ class EXP3:
     def get_best_arm(self):
         # For each time index, sample the best arm based off P_(t-1),j
         all_ix = np.arange(self.num_arms)
-        return np.random.choice(a=all_ix, size=1, replace=False,p=self.P)
+        return np.random.choice(a=all_ix, size=1, replace=False, p=self.P)
         # return np.argmax(self.P)
 
     def update_exp3(self):
         # calculate and update P_t,j
-        exp_wt = np.exp(self.lr * self.S)
+        exp_wt = np.exp(self.S * self.lr)
         self.P = exp_wt / sum(exp_wt)
 
     def update_stats(self, rew_vec):
@@ -38,7 +38,7 @@ class EXP3:
         self.regret.append((genie_rew - player_rew))
 
         # update S
-        self.S[self.arm_ix] += 1 - (1 - rew_vec[self.arm_ix]) / self.P[self.arm_ix]
+        self.S[self.arm_ix] += 1 - ((1 - rew_vec[self.arm_ix]) / self.P[self.arm_ix])
 
         self.time += 1
 
