@@ -53,7 +53,7 @@ class EXP3:
         self.time += 1
 
     def get_reward(self):
-        return self.true_means + np.random.normal(0, 1, np.shape(self.true_means))
+        return self.true_means + np.random.normal(0, 0.01, np.shape(self.true_means))
 
     def iterate(self):
         # if self.time < self.num_arms:
