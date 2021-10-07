@@ -3,35 +3,31 @@ import matplotlib.pyplot as plt
 
 
 class EXP3:
-    def __init__(self, avg: np.ndarray):
+    def __init__(self, avg: np.ndarray, lr: float):
         self.true_means = avg  # true means of the arms
         self.num_arms = avg.size  # num arms (k)
         self.best_arm = int(np.argmax(self.true_means))  # True best arm
+        self.lr = lr
 
-        self.time = 0
-        self.cum_regret = [0.0] * self.num_arms                 # S_t,j = initialize to zero
-        self.prob_arms = [1.0 / self.num_arms] * self.num_arms  # P_t,j = initialize uniformly
-
-        self.arm_ix = None
+        self.restart()
 
     def restart(self):
         # Reset counters
         self.time = 0
-        self.cum_regret = [0.0] * self.num_arms                 # S_t,j = initialize to zero
-        self.prob_arms = [1.0 / self.num_arms] * self.num_arms  # P_t,j = initialize uniformly
-
+        self.S = [0.0] * self.num_arms                 # S_t,j = initialize to zero
+        self.P = [1.0 / self.num_arms] * self.num_arms  # P_t,j = initialize uniformly
         self.arm_ix = None
+
+        self.regret = []
 
     def get_best_arm(self):
         # For each time index, sample the best arm based off P_(t-1),j
-        return np.argmax(self.prob_arms)
+        return np.argmax(self.P)
 
-    def update_ucb(self):
-        f = 1 + self.time * (np.log(self.time + 1) ** 2)
-        for j in range(self.num_arms):
-            # So that T[j-1] is not 0 ~ div by zero error else
-            nj = 1 if self.num_pulls[j] == 0 else self.num_pulls[j]
-            self.ucb_arr[j] = self.emp_means[j] + np.sqrt((2 * np.log(f)) / nj)
+    def update_exp3(self):
+        # calculate and update P_t,j
+        exp_wt = np.exp(self.lr * self.S)
+        self.P = exp_wt / sum(exp_wt)
 
     def update_stats(self, rew_vec):
         # genie plays best arm
@@ -39,29 +35,21 @@ class EXP3:
         player_rew = rew_vec[self.arm_ix]
         self.regret.append((genie_rew - player_rew))
 
-        ni = self.num_pulls[self.arm_ix]
-        self.emp_means[self.arm_ix] = self.emp_means[self.arm_ix] * (ni / (ni + 1)) + player_rew / (ni + 1)
-        self.num_pulls[self.arm_ix] += 1
         self.time += 1
 
     def get_reward(self):
         return self.true_means + np.random.normal(0, 0.01, np.shape(self.true_means))
 
     def iterate(self):
-        # if self.time < self.num_arms:
-        #     # So that T[j-1] is not 0 ~ div by zero error else
-        #     self.arm_ix = self.time
-        # else:
-        self.update_ucb()
+        self.update_exp3()
         self.arm_ix = self.get_best_arm()
-
         rew_vec = self.get_reward()
         self.update_stats(rew_vec=rew_vec)
 
 
-def run(avg, iterations, num_repeat, eta, var):
+def run(avg, iterations, num_repeat, eta):
     regret = np.zeros((num_repeat, iterations))
-    exp3 = EXP3(avg=avg)
+    exp3 = EXP3(avg=avg, lr=eta)
 
     for j in range(num_repeat):
         for t in range(iterations):
@@ -79,13 +67,11 @@ if __name__ == '__main__':
     num_iter, num_inst = int(2e3), 20
 
     eta = np.sqrt(np.log(mu.size) / (num_iter * mu.size))
-    var = 0.01
 
     reg = run(avg=mu,
               iterations=num_iter,
               num_repeat=num_inst,
-              eta=eta,
-              var=var)
+              eta=eta)
 
     mean_runs = np.mean(reg, axis=0)
     std_runs = np.std(reg, axis=0)
@@ -98,7 +84,7 @@ if __name__ == '__main__':
     # plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5, color='b')
 
     plt.xlabel('Time (Log Scale)', fontsize=10)
-    plt.ylabel('Cumulative Regret with UCB', fontsize=10)
+    plt.ylabel('Cumulative Regret with EXP3', fontsize=10)
     plt.xscale('log')
     plt.grid(True, which='both', linestyle='--')
     plt.show()
