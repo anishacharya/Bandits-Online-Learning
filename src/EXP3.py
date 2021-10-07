@@ -22,7 +22,9 @@ class EXP3:
 
     def get_best_arm(self):
         # For each time index, sample the best arm based off P_(t-1),j
-        return np.argmax(self.P)
+        all_ix = np.arange(self.num_arms)
+        return np.random.choice(a=all_ix, size=1, replace=False,p=self.P)
+        # return np.argmax(self.P)
 
     def update_exp3(self):
         # calculate and update P_t,j
