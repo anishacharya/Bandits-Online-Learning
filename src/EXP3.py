@@ -7,15 +7,10 @@ class EXP3:
         self.true_means = avg  # true means of the arms
         self.num_arms = avg.size  # num arms (k)
         self.best_arm = int(np.argmax(self.true_means))  # True best arm
-        # sort = np.sort(self.true_means)[::-1]
-        # self.delta_min = sort[0] - sort[1]
-        # self.C = 1
 
         self.time = 0
         self.regret = []
-        self.emp_means = np.zeros_like(self.true_means)  # empirical means of arms  \hat{\mu_j}
-        self.num_pulls = np.zeros_like(self.true_means)  # number of times that arm i has been pulled T_j
-        self.ucb_arr = 1e5 * np.ones_like(self.true_means)  # Upper confidence bounds i.e. U_j
+        self.prob_arms = [1.0 / self.num_arms] * self.num_arms  # P_t,j = initialize uniformly
 
         self.arm_ix = None
 
@@ -24,15 +19,13 @@ class EXP3:
         self.time = 0
         self.regret = []
 
-        self.emp_means = np.zeros_like(self.true_means)
-        self.num_pulls = np.zeros_like(self.true_means)
-        self.ucb_arr = 1e5 * np.ones_like(self.true_means)
+        self.prob_arms = [1.0 / self.num_arms] * self.num_arms  # P_t,j = initialize uniformly
 
         self.arm_ix = None
 
     def get_best_arm(self):
-        # For each time index, find the best arm according to UCB
-        return np.argmax(self.ucb_arr)
+        # For each time index, sample the best arm based off P_(t-1),j
+        return np.argmax(self.prob_arms)
 
     def update_ucb(self):
         f = 1 + self.time * (np.log(self.time + 1) ** 2)
