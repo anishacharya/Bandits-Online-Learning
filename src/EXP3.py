@@ -88,7 +88,7 @@ if __name__ == '__main__':
     plt.plot(x, mean_runs, color='b')
     # plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5, color='b')
 
-    plt.xlabel('Time (Log Scale)', fontsize=10)
+    plt.xlabel('Time', fontsize=10)
     plt.ylabel('Cumulative Regret with EXP3', fontsize=10)
     plt.xscale('log')
     plt.grid(True, which='both', linestyle='--')
