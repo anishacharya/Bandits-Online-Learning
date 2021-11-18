@@ -119,7 +119,7 @@ def run(avg, iterations, num_repeat, eta=0.001, algo='exp3', Delta: float = 0.1)
 if __name__ == '__main__':
 
     # Hyper Parameters
-    num_arms = 10
+    num_arms = 50
     Delta = 0.1
     mu = np.asarray([0.5] * num_arms)
     mu[8] += Delta
@@ -130,7 +130,7 @@ if __name__ == '__main__':
 
     # Run Different flavors of EXP3 Algorithms
     algos = ['exp3', 'exp3_ix', 'exp3_soft_clip', 'exp3_clip']
-    etas = [0.01, 0.01, 0.01, 0.01]
+    etas = [0.0001, 0.01, 0.01, 0.01]
 
     for algo, eta in zip(algos, etas):
         print('running algo {}'.format(algo))
@@ -157,12 +157,11 @@ if __name__ == '__main__':
 
         # Save results
         root = os.getcwd()
-        log_file = root + algo + '.' + eta + '.' + num_arms + '.log'
-        with open(log_file) as f:
-            json.dump(metrics, f, indent=4, ensure_ascii=False, cls=NumpyEncoder)
-
+        log_file = root + '../' + algo + '_' + str(eta) + '_' + str(num_arms) + '.log'
         print('Mean Cum Regret of {} : {}'.format(algo, mean_runs[-1]))
         print('Std Cum Regret of {} : {}'.format(algo, np.mean(std_runs)))
+        with open(log_file, 'w+') as f:
+            json.dump(metrics, f, indent=4, ensure_ascii=False, cls=NumpyEncoder)
 
         UB = mean_runs + 3 * std_runs
         LB = mean_runs - 3 * std_runs
