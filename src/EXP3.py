@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 
 
 class EXP3:
-    def __init__(self, avg: np.ndarray, lr: float, algo: str = 'exp3', reward_dist='normal', Delta=0.1):
+    def __init__(self, avg: np.ndarray, lr: float, algo: str = 'exp3', reward_dist='bin', Delta=0.1):
         self.init_true_mean = avg
-        self.true_means = avg                            # true means of the arms
-        self.num_arms = avg.size                         # num arms (k)
+        self.true_means = avg  # true means of the arms
+        self.num_arms = avg.size  # num arms (k)
         self.best_arm = int(np.argmax(self.true_means))  # True best arm
         self.lr = lr
         self.Delta = Delta
@@ -23,8 +23,8 @@ class EXP3:
         # Reset counters
         self.true_means = self.init_true_mean
         self.time = 0
-        self.L = np.array([0.0] * self.num_arms)                 # S_t,j = initialize to zero
-        self.P = None                                            # P_t,j = initialized uniformly at t=0 by update_exp3()
+        self.L = np.array([0.0] * self.num_arms)  # S_t,j = initialize to zero
+        self.P = None  # P_t,j = initialized uniformly at t=0 by update_exp3()
         self.arm_ix = None
 
         self.regret = []
@@ -83,7 +83,7 @@ class EXP3:
         self.update_stats(rew_vec=rew_vec)
 
 
-def run(avg, iterations, num_repeat, eta=0.001, algo='exp3', Delta:float=0.1):
+def run(avg, iterations, num_repeat, eta=0.001, algo='exp3', Delta: float = 0.1):
     regret = np.zeros((num_repeat, iterations))
     exp3 = EXP3(avg=avg, lr=eta, algo=algo, Delta=Delta)
 
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     mu[8] += Delta
     mu[9] -= Delta
 
-    num_iter, num_inst = 1e5, 20
+    num_iter, num_inst = int(1e5), 20
 
     eta = np.sqrt(np.log(mu.size) / (num_iter * mu.size))
 
