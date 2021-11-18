@@ -3,7 +3,6 @@
     "ylim_t": ,
     "xlim_l": ,
     "xlim_r": ,
-    "dir": '',
     "plots":
       [
         {
@@ -13,31 +12,30 @@
           'marker': ,
           'line_style': 'solid',
           "clr": 'b',
-          "eval_freq": 128,
-          "batch_size": 32,
-          "plot_freq": 1,
         },
         {
-          'file': 'result_dumps/exp3.25.log',
+          'file': 'result_dumps/exp3_ix.10.log',
           'label': "naivePU",
           'line_width': 2,
           'marker': ,
           'line_style': 'solid',
           "clr": 'r',
-          "eval_freq": 128,
-          "batch_size": 32,
-          "plot_freq": 1,
         },
         {
-          'file': 'result_dumps/exp3.10.log',
+          'file': 'result_dumps/exp3_soft_clip.10.log',
           'label': "CB-naivePU",
           'line_width': 2,
           'marker': ,
           'line_style': 'solid',
           "clr": 'g',
-          "eval_freq": 128,
-          "batch_size": 32,
-          "plot_freq": 1,
+        },
+        {
+          'file': 'result_dumps/exp3_clip.10.log',
+          'label': "CB-naivePU",
+          'line_width': 2,
+          'marker': ,
+          'line_style': 'solid',
+          "clr": 'g',
         },
 #        {
 #          'file': 'results/STL10/constant_beta/rep_top.50',
@@ -46,9 +44,6 @@
 #          'marker': ,
 #          'line_style': 'solid',
 #          "clr": 'g',
-#          "eval_freq": 1,
-#          "batch_size": 1024,
-#          "plot_freq": 100,
 #        },
       ]
 }

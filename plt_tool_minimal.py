@@ -29,15 +29,13 @@ if __name__ == '__main__':
 
     plt_cfg = yaml.load(open('plt_cfg.yaml'), Loader=yaml.FullLoader)
 
-    d = plt_cfg["dir"] if plt_cfg["dir"] else ""
-    smoothen = plt_cfg["smoothen"]
     ylim_b = plt_cfg["ylim_b"]
     ylim_t = plt_cfg["ylim_t"]
     xlim_l = plt_cfg["xlim_l"]
     xlim_r = plt_cfg["xlim_r"]
 
     for pl in plt_cfg["plots"]:
-        result_file = d + pl["file"]
+        result_file = pl["file"]
         lbl = pl["label"]
         lw = pl['line_width']
         ls = pl["line_style"]
