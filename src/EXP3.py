@@ -94,7 +94,6 @@ class EXP3:
 
 
 def run(avg, iterations, num_repeat, eta=0.001, algo='exp3', Delta: float = 0.1):
-
     regret = np.zeros((num_repeat, iterations))
     exp3 = EXP3(avg=avg, lr=eta, algo=algo, Delta=Delta)
 
@@ -124,12 +123,12 @@ if __name__ == '__main__':
     mu[9] -= Delta
 
     num_iter, num_inst = int(1e5), 5
-    eta = 0.01  # np.sqrt(np.log(mu.size) / (num_iter * mu.size))
+    # eta = np.sqrt(np.log(mu.size) / (num_iter * mu.size))
 
     # Run Different flavors of EXP3 Algorithms
     algos = ['exp3', 'exp3_ix', 'exp3_soft_clip', 'exp3_clip']
-
-    for algo in algos:
+    etas = [0.01, 0.01, 0.01, 0.01]
+    for algo, eta in zip(algos, etas):
         print('running algo {}'.format(algo))
         reg = run(avg=mu,
                   iterations=num_iter,
@@ -140,6 +139,10 @@ if __name__ == '__main__':
 
         mean_runs = np.mean(reg, axis=0)
         std_runs = np.std(reg, axis=0)
+        metrics = {
+            "mean_runs": mean_runs,
+            "std_runs": std_runs
+        }
 
         print('Mean Cum Regret of {} : {}'.format(algo, mean_runs[-1]))
         print('Std Cum Regret of {} : {}'.format(algo, np.mean(std_runs)))
