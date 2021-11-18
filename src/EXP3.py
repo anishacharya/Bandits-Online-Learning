@@ -105,19 +105,18 @@ def run(avg, iterations, num_repeat, eta=0.001, algo='exp3', Delta: float = 0.1)
 
         # calculate cumulative regret
         regret[j, :] = np.cumsum(np.asarray(exp3.regret))
-
         # mean_runs = np.mean(regret[0:j + 1, :], axis=0)
         # std_runs = np.std(regret[0:j + 1, :], axis=0)
         # print("Mean total regret at the end:", mean_runs[-1])
         # print("Std:", std_runs[-1])
-
         exp3.restart()
 
     return regret
 
 
 if __name__ == '__main__':
-    # mu = np.asarray([0.8, 0.7, 0.5])
+
+    # Hyper Parameters
     num_arms = 10
     Delta = 0.1
     mu = np.asarray([0.5] * num_arms)
@@ -125,9 +124,9 @@ if __name__ == '__main__':
     mu[9] -= Delta
 
     num_iter, num_inst = int(1e5), 5
-
     eta = 0.01  # np.sqrt(np.log(mu.size) / (num_iter * mu.size))
 
+    # Run Different flavors of EXP3 Algorithms
     algos = ['exp3', 'exp3_ix', 'exp3_soft_clip', 'exp3_clip']
 
     for algo in algos:
