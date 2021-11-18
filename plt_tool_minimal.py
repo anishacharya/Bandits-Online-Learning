@@ -5,6 +5,7 @@ from matplotlib import rc
 from matplotlib.pyplot import figure
 import json
 import yaml
+import os
 
 
 def plot_(lbl: str, res_file: str, line_width=4, marker=None, line_style=None, color=None):
@@ -26,8 +27,9 @@ if __name__ == '__main__':
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     # activate latex text rendering
     rc('text', usetex=True)
-
-    plt_cfg = yaml.load(open('plt_cfg.yaml'), Loader=yaml.FullLoader)
+    root = os.getcwd()
+    cfg = root + '/plt_cfg.yaml'
+    plt_cfg = yaml.load(open(cfg), Loader=yaml.FullLoader)
 
     ylim_b = plt_cfg["ylim_b"]
     ylim_t = plt_cfg["ylim_t"]
