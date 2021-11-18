@@ -5,13 +5,9 @@ import copy
 
 class EXP3:
     def __init__(self, avg: np.ndarray, lr: float, algo: str = 'exp3', reward_dist='bin', Delta=0.1):
-        # self.init_true_mean = np.asarray([0.5] * 10) # copy.deepcopy(avg)
-        # self.init_true_mean[8] += Delta
-        # self.init_true_mean[9] -= Delta
 
-        self.true_means = np.asarray([0.5] * 10)  # avg  # true means of the arms
-        self.true_means[8] += Delta
-        self.true_means[9] -= Delta
+        self.init_true_means = avg
+        self.true_means = avg
 
         self.num_arms = avg.size  # num arms (k)
         self.best_arm = int(np.argmax(self.true_means))  # True best arm
@@ -31,9 +27,9 @@ class EXP3:
     def restart(self):
         # Reset counters
         # self.true_means = self.init_true_mean
-        self.true_means = np.asarray([0.5] * 10)  # avg  # true means of the arms
-        self.true_means[8] += Delta
-        self.true_means[9] -= Delta
+        self.true_means = copy.deepcopy(self.init_true_means)  # np.asarray([0.5] * 50)  # avg  # true means of the arms
+        # self.true_means[8] += Delta
+        # self.true_means[9] -= Delta
         self.best_arm = int(np.argmax(self.true_means))  # True best arm
 
         self.time = 0
@@ -132,7 +128,7 @@ if __name__ == '__main__':
 
     eta = 0.01  # np.sqrt(np.log(mu.size) / (num_iter * mu.size))
 
-    algos = ['exp3_soft_clip', 'exp3_ix', 'exp3', 'exp3_clip']
+    algos = ['exp3', 'exp3_ix', 'exp3_soft_clip', 'exp3_clip']
 
     for algo in algos:
         print('running algo {}'.format(algo))
