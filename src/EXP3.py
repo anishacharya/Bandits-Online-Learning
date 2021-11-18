@@ -11,6 +11,7 @@ class EXP3:
 
         self.algo = algo
         self.clip = 0.5 * self.lr
+        self.soft_clip = 0.5*self.lr
         self.gamma = 0.5 * self.lr
 
         self.restart()
@@ -36,6 +37,7 @@ class EXP3:
         self.P = exp_wt / sum(exp_wt)
 
     def update_stats(self, rew_vec):
+
         # update regret
         genie_rew = rew_vec[self.best_arm]
         player_rew = rew_vec[self.arm_ix]
@@ -44,11 +46,14 @@ class EXP3:
         # update S
         if self.algo == 'exp3':
             self.S[self.arm_ix] += 1 - ((1 - rew_vec[self.arm_ix]) / self.P[self.arm_ix])
+        elif self.algo == 'exp3_ix':
+            self.S[self.arm_ix] += 1 - ((1 - rew_vec[self.arm_ix]) / (self.P[self.arm_ix] + self.gamma))
         elif self.algo == 'exp3_clip':
             clipped_estimate = (1 / self.clip) * min(1.0, (self.clip / self.P[self.arm_ix]))
             self.S[self.arm_ix] += 1 - (1 - rew_vec[self.arm_ix]) * clipped_estimate
-        elif self.algo == 'exp3_ix':
-            self.S[self.arm_ix] += 1 - ((1 - rew_vec[self.arm_ix]) / (self.P[self.arm_ix] + self.gamma))
+        elif self.algo == 'exp3_soft_clip':
+            clipped_estimate = (1 / self.soft_clip) * np.log(1.0 + (self.soft_clip / self.P[self.arm_ix]))
+            self.S[self.arm_ix] += 1 - (1 - rew_vec[self.arm_ix]) * clipped_estimate
 
         self.time += 1
 
@@ -62,9 +67,9 @@ class EXP3:
         self.update_stats(rew_vec=rew_vec)
 
 
-def run(avg, iterations, num_repeat, eta):
+def run(avg, iterations, num_repeat, eta=0.001, algo='exp3'):
     regret = np.zeros((num_repeat, iterations))
-    exp3 = EXP3(avg=avg, lr=eta)
+    exp3 = EXP3(avg=avg, lr=eta, algo=algo)
 
     for j in range(num_repeat):
         for t in range(iterations):
@@ -83,23 +88,30 @@ if __name__ == '__main__':
 
     eta = np.sqrt(np.log(mu.size) / (num_iter * mu.size))
 
-    reg = run(avg=mu,
-              iterations=num_iter,
-              num_repeat=num_inst,
-              eta=eta)
+    algos = ['exp3', 'exp3_ix', 'exp3_clip', 'exp3_soft_clip']
 
-    mean_runs = np.mean(reg, axis=0)
-    std_runs = np.std(reg, axis=0)
+    for algo in algos:
+        print('running algo {}'.format(algo))
+        reg = run(avg=mu,
+                  iterations=num_iter,
+                  num_repeat=num_inst,
+                  eta=eta,
+                  algo=algo)
 
-    UB = mean_runs + 1 * std_runs
-    LB = mean_runs - 1 * std_runs
+        mean_runs = np.mean(reg, axis=0)
+        std_runs = np.std(reg, axis=0)
 
-    x = np.arange(len(mean_runs))
-    plt.plot(x, mean_runs, color='b')
-    # plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5, color='b')
+        UB = mean_runs + 3 * std_runs
+        LB = mean_runs - 3 * std_runs
 
+        x = np.arange(len(mean_runs))
+        plt.plot(x, mean_runs, label=algo)
+        # plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5)
+
+    plt.legend()
     plt.xlabel('Time', fontsize=10)
-    plt.ylabel('Cumulative Regret with EXP3', fontsize=10)
+    plt.ylabel('Cumulative Regret', fontsize=10)
     plt.xscale('log')
     plt.grid(True, which='both', linestyle='--')
+
     plt.show()
