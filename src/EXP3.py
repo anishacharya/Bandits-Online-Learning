@@ -119,7 +119,7 @@ def run(avg, iterations, num_repeat, eta=0.001, algo='exp3', Delta: float = 0.1)
 if __name__ == '__main__':
 
     # Hyper Parameters
-    num_arms = 50
+    num_arms = 25
     Delta = 0.1
     mu = np.asarray([0.5] * num_arms)
     mu[8] += Delta
@@ -157,7 +157,7 @@ if __name__ == '__main__':
 
         # Save results
         root = os.getcwd()
-        log_file = root + '../' + algo + '_' + str(eta) + '_' + str(num_arms) + '.log'
+        log_file = root + '/../' + algo + '.' + str(num_arms) + '.log'
         print('Mean Cum Regret of {} : {}'.format(algo, mean_runs[-1]))
         print('Std Cum Regret of {} : {}'.format(algo, np.mean(std_runs)))
         with open(log_file, 'w+') as f:
