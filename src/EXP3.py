@@ -149,13 +149,15 @@ if __name__ == '__main__':
         metrics = {
             "mean_runs": mean_runs,
             "std_runs": std_runs,
+            "eta": eta,
+
             "expected_std": expected_std,
             "total_regret": total_regret
         }
 
         # Save results
         root = os.getcwd()
-        log_file = root + algo + '.log'
+        log_file = root + algo + '.' + eta + '.' + num_arms + '.log'
         with open(log_file) as f:
             json.dump(metrics, f, indent=4, ensure_ascii=False, cls=NumpyEncoder)
 
@@ -172,7 +174,7 @@ if __name__ == '__main__':
     plt.legend()
     plt.xlabel('Time', fontsize=10)
     plt.ylabel('Cumulative Regret', fontsize=10)
-    plt.xscale('log')
+    # plt.xscale('log')
     plt.grid(True, which='both', linestyle='--')
 
     plt.show()
