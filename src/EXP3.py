@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 class EXP3:
     def __init__(self, avg: np.ndarray, lr: float, algo: str = 'exp3', reward_dist='normal', Delta=0.1):
+        self.init_true_mean = avg
         self.true_means = avg                            # true means of the arms
         self.num_arms = avg.size                         # num arms (k)
         self.best_arm = int(np.argmax(self.true_means))  # True best arm
@@ -20,6 +21,7 @@ class EXP3:
 
     def restart(self):
         # Reset counters
+        self.true_means = self.init_true_mean
         self.time = 0
         self.L = np.array([0.0] * self.num_arms)                 # S_t,j = initialize to zero
         self.P = None                                            # P_t,j = initialized uniformly at t=0 by update_exp3()
