@@ -3,11 +3,15 @@ import matplotlib.pyplot as plt
 
 
 class EXP3:
-    def __init__(self, avg: np.ndarray, lr: float):
-        self.true_means = avg  # true means of the arms
-        self.num_arms = avg.size  # num arms (k)
+    def __init__(self, avg: np.ndarray, lr: float, algo: str = 'exp3'):
+        self.true_means = avg                            # true means of the arms
+        self.num_arms = avg.size                         # num arms (k)
         self.best_arm = int(np.argmax(self.true_means))  # True best arm
         self.lr = lr
+
+        self.algo = algo
+        self.clip = 0.5 * self.lr
+        self.gamma = 0.5 * self.lr
 
         self.restart()
 
@@ -38,7 +42,13 @@ class EXP3:
         self.regret.append((genie_rew - player_rew))
 
         # update S
-        self.S[self.arm_ix] += 1 - ((1 - rew_vec[self.arm_ix]) / self.P[self.arm_ix])
+        if self.algo == 'exp3':
+            self.S[self.arm_ix] += 1 - ((1 - rew_vec[self.arm_ix]) / self.P[self.arm_ix])
+        elif self.algo == 'exp3_clip':
+            clipped_estimate = (1 / self.clip) * min(1.0, (self.clip / self.P[self.arm_ix]))
+            self.S[self.arm_ix] += 1 - (1 - rew_vec[self.arm_ix]) * clipped_estimate
+        elif self.algo == 'exp3_ix':
+            self.S[self.arm_ix] += 1 - ((1 - rew_vec[self.arm_ix]) / (self.P[self.arm_ix] + self.gamma))
 
         self.time += 1
 
