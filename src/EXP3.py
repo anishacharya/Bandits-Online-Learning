@@ -1,6 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
+import os
+import json
+from numpyencoder import NumpyEncoder
 
 
 class EXP3:
@@ -128,6 +131,7 @@ if __name__ == '__main__':
     # Run Different flavors of EXP3 Algorithms
     algos = ['exp3', 'exp3_ix', 'exp3_soft_clip', 'exp3_clip']
     etas = [0.01, 0.01, 0.01, 0.01]
+
     for algo, eta in zip(algos, etas):
         print('running algo {}'.format(algo))
         reg = run(avg=mu,
@@ -139,10 +143,21 @@ if __name__ == '__main__':
 
         mean_runs = np.mean(reg, axis=0)
         std_runs = np.std(reg, axis=0)
+
+        expected_std = np.mean(std_runs)
+        total_regret = mean_runs[-1]
         metrics = {
             "mean_runs": mean_runs,
-            "std_runs": std_runs
+            "std_runs": std_runs,
+            "expected_std": expected_std,
+            "total_regret": total_regret
         }
+
+        # Save results
+        root = os.getcwd()
+        log_file = root + algo + '.log'
+        with open(log_file) as f:
+            json.dump(metrics, f, indent=4, ensure_ascii=False, cls=NumpyEncoder)
 
         print('Mean Cum Regret of {} : {}'.format(algo, mean_runs[-1]))
         print('Std Cum Regret of {} : {}'.format(algo, np.mean(std_runs)))
