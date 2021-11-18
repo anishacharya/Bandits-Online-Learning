@@ -3,11 +3,12 @@ import matplotlib.pyplot as plt
 
 
 class EXP3:
-    def __init__(self, avg: np.ndarray, lr: float, algo: str = 'exp3', reward_dist='normal'):
+    def __init__(self, avg: np.ndarray, lr: float, algo: str = 'exp3', reward_dist='normal', Delta=0.1):
         self.true_means = avg                            # true means of the arms
         self.num_arms = avg.size                         # num arms (k)
         self.best_arm = int(np.argmax(self.true_means))  # True best arm
         self.lr = lr
+        self.Delta = Delta
 
         self.algo = algo
         self.clip = 0.5 * self.lr
@@ -20,7 +21,7 @@ class EXP3:
     def restart(self):
         # Reset counters
         self.time = 0
-        self.S = np.array([0.0] * self.num_arms)                 # S_t,j = initialize to zero
+        self.L = np.array([0.0] * self.num_arms)                 # S_t,j = initialize to zero
         self.P = None                                            # P_t,j = initialized uniformly at t=0 by update_exp3()
         self.arm_ix = None
 
@@ -34,7 +35,7 @@ class EXP3:
 
     def update_exp3(self):
         # calculate and update P_t,j
-        exp_wt = np.exp(self.S * self.lr)
+        exp_wt = np.exp(- self.L * self.lr)
         self.P = exp_wt / sum(exp_wt)
 
     def update_stats(self, rew_vec):
@@ -46,15 +47,18 @@ class EXP3:
 
         # update S
         if self.algo == 'exp3':
-            self.S[self.arm_ix] += 1 - ((1 - rew_vec[self.arm_ix]) / self.P[self.arm_ix])
+            self.L[self.arm_ix] += ((1 - rew_vec[self.arm_ix]) / self.P[self.arm_ix])
+
         elif self.algo == 'exp3_ix':
-            self.S[self.arm_ix] += 1 - ((1 - rew_vec[self.arm_ix]) / (self.P[self.arm_ix] + self.gamma))
+            self.L[self.arm_ix] += ((1 - rew_vec[self.arm_ix]) / (self.P[self.arm_ix] + self.gamma))
+
         elif self.algo == 'exp3_clip':
             clipped_estimate = (1 / self.clip) * min(1.0, (self.clip / self.P[self.arm_ix]))
-            self.S[self.arm_ix] += 1 - (1 - rew_vec[self.arm_ix]) * clipped_estimate
+            self.L[self.arm_ix] += (1 - rew_vec[self.arm_ix]) * clipped_estimate
+
         elif self.algo == 'exp3_soft_clip':
             clipped_estimate = (1 / self.soft_clip) * np.log(1.0 + (self.soft_clip / self.P[self.arm_ix]))
-            self.S[self.arm_ix] += 1 - (1 - rew_vec[self.arm_ix]) * clipped_estimate
+            self.L[self.arm_ix] += (1 - rew_vec[self.arm_ix]) * clipped_estimate
 
         self.time += 1
 
@@ -68,7 +72,7 @@ class EXP3:
 
     def iterate(self):
         if self.time > 5e4:
-            self.true_means[9] = 0.5 + 4 * 0.1
+            self.true_means[9] = 0.5 + 4 * self.Delta
             self.best_arm = int(np.argmax(self.true_means))
 
         self.update_exp3()
@@ -77,9 +81,9 @@ class EXP3:
         self.update_stats(rew_vec=rew_vec)
 
 
-def run(avg, iterations, num_repeat, eta=0.001, algo='exp3'):
+def run(avg, iterations, num_repeat, eta=0.001, algo='exp3', Delta:float=0.1):
     regret = np.zeros((num_repeat, iterations))
-    exp3 = EXP3(avg=avg, lr=eta, algo=algo)
+    exp3 = EXP3(avg=avg, lr=eta, algo=algo, Delta=Delta)
 
     for j in range(num_repeat):
         for t in range(iterations):
@@ -95,12 +99,12 @@ def run(avg, iterations, num_repeat, eta=0.001, algo='exp3'):
 if __name__ == '__main__':
     # mu = np.asarray([0.8, 0.7, 0.5])
     num_arms = 10
-    delta = 0.1
+    Delta = 0.1
     mu = np.asarray([0.5] * num_arms)
-    mu[8] += delta
-    mu[9] -= delta
+    mu[8] += Delta
+    mu[9] -= Delta
 
-    num_iter, num_inst = int(2e3), 20
+    num_iter, num_inst = 1e5, 20
 
     eta = np.sqrt(np.log(mu.size) / (num_iter * mu.size))
 
@@ -112,7 +116,8 @@ if __name__ == '__main__':
                   iterations=num_iter,
                   num_repeat=num_inst,
                   eta=eta,
-                  algo=algo)
+                  algo=algo,
+                  Delta=Delta)
 
         mean_runs = np.mean(reg, axis=0)
         std_runs = np.std(reg, axis=0)
