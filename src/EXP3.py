@@ -1,17 +1,26 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import copy
 
 
 class EXP3:
     def __init__(self, avg: np.ndarray, lr: float, algo: str = 'exp3', reward_dist='bin', Delta=0.1):
-        self.init_true_mean = avg
-        self.true_means = avg  # true means of the arms
+        # self.init_true_mean = np.asarray([0.5] * 10) # copy.deepcopy(avg)
+        # self.init_true_mean[8] += Delta
+        # self.init_true_mean[9] -= Delta
+
+        self.true_means = np.asarray([0.5] * 10)  # avg  # true means of the arms
+        self.true_means[8] += Delta
+        self.true_means[9] -= Delta
+
         self.num_arms = avg.size  # num arms (k)
         self.best_arm = int(np.argmax(self.true_means))  # True best arm
+
         self.lr = lr
         self.Delta = Delta
 
         self.algo = algo
+
         self.clip = 0.5 * self.lr
         self.soft_clip = 0.5 * self.lr
         self.gamma = 0.5 * self.lr
@@ -21,7 +30,12 @@ class EXP3:
 
     def restart(self):
         # Reset counters
-        self.true_means = self.init_true_mean
+        # self.true_means = self.init_true_mean
+        self.true_means = np.asarray([0.5] * 10)  # avg  # true means of the arms
+        self.true_means[8] += Delta
+        self.true_means[9] -= Delta
+        self.best_arm = int(np.argmax(self.true_means))  # True best arm
+
         self.time = 0
         self.L = np.array([0.0] * self.num_arms)  # S_t,j = initialize to zero
         self.P = None  # P_t,j = initialized uniformly at t=0 by update_exp3()
@@ -84,15 +98,23 @@ class EXP3:
 
 
 def run(avg, iterations, num_repeat, eta=0.001, algo='exp3', Delta: float = 0.1):
+
     regret = np.zeros((num_repeat, iterations))
     exp3 = EXP3(avg=avg, lr=eta, algo=algo, Delta=Delta)
 
     for j in range(num_repeat):
+        np.random.seed(j)
         for t in range(iterations):
             exp3.iterate()
 
         # calculate cumulative regret
         regret[j, :] = np.cumsum(np.asarray(exp3.regret))
+
+        # mean_runs = np.mean(regret[0:j + 1, :], axis=0)
+        # std_runs = np.std(regret[0:j + 1, :], axis=0)
+        # print("Mean total regret at the end:", mean_runs[-1])
+        # print("Std:", std_runs[-1])
+
         exp3.restart()
 
     return regret
@@ -106,11 +128,11 @@ if __name__ == '__main__':
     mu[8] += Delta
     mu[9] -= Delta
 
-    num_iter, num_inst = int(1e5), 20
+    num_iter, num_inst = int(1e5), 5
 
-    eta = np.sqrt(np.log(mu.size) / (num_iter * mu.size))
+    eta = 0.01  # np.sqrt(np.log(mu.size) / (num_iter * mu.size))
 
-    algos = ['exp3', 'exp3_ix', 'exp3_clip', 'exp3_soft_clip']
+    algos = ['exp3_soft_clip', 'exp3_ix', 'exp3', 'exp3_clip']
 
     for algo in algos:
         print('running algo {}'.format(algo))
@@ -123,6 +145,9 @@ if __name__ == '__main__':
 
         mean_runs = np.mean(reg, axis=0)
         std_runs = np.std(reg, axis=0)
+
+        print('Mean Cum Regret of {} : {}'.format(algo, mean_runs[-1]))
+        print('Std Cum Regret of {} : {}'.format(algo, np.mean(std_runs)))
 
         UB = mean_runs + 3 * std_runs
         LB = mean_runs - 3 * std_runs
