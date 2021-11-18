@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 
 class EXP3:
-    def __init__(self, avg: np.ndarray, lr: float, algo: str = 'exp3'):
+    def __init__(self, avg: np.ndarray, lr: float, algo: str = 'exp3', reward_dist='normal'):
         self.true_means = avg                            # true means of the arms
         self.num_arms = avg.size                         # num arms (k)
         self.best_arm = int(np.argmax(self.true_means))  # True best arm
@@ -11,9 +11,10 @@ class EXP3:
 
         self.algo = algo
         self.clip = 0.5 * self.lr
-        self.soft_clip = 0.5*self.lr
+        self.soft_clip = 0.5 * self.lr
         self.gamma = 0.5 * self.lr
 
+        self.reward_dist = reward_dist
         self.restart()
 
     def restart(self):
@@ -58,9 +59,18 @@ class EXP3:
         self.time += 1
 
     def get_reward(self):
-        return self.true_means + np.random.normal(0, 0.01, np.shape(self.true_means))
+        if self.reward_dist == 'normal':
+            return self.true_means + np.random.normal(0, 0.01, np.shape(self.true_means))
+        elif self.reward_dist == 'bin':
+            return np.random.binomial(n=1, p=self.true_means)
+        else:
+            raise NotImplementedError
 
     def iterate(self):
+        if self.time > 5e4:
+            self.true_means[9] = 0.5 + 4 * 0.1
+            self.best_arm = int(np.argmax(self.true_means))
+
         self.update_exp3()
         self.arm_ix = self.get_best_arm()
         rew_vec = self.get_reward()
@@ -83,7 +93,13 @@ def run(avg, iterations, num_repeat, eta=0.001, algo='exp3'):
 
 
 if __name__ == '__main__':
-    mu = np.asarray([0.8, 0.7, 0.5])
+    # mu = np.asarray([0.8, 0.7, 0.5])
+    num_arms = 10
+    delta = 0.1
+    mu = np.asarray([0.5] * num_arms)
+    mu[8] += delta
+    mu[9] -= delta
+
     num_iter, num_inst = int(2e3), 20
 
     eta = np.sqrt(np.log(mu.size) / (num_iter * mu.size))
