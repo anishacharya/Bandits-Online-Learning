@@ -15,9 +15,10 @@ def plot_(lbl: str, res_file: str, line_width=4, marker=None, line_style=None, c
     mean = result["mean_runs"]
     std = result["std_runs"]
 
-    UB = mean + 1 * std
-    LB = mean - 1 * std
-    x = np.arange(mean)
+    # UB = mean + 1 * std
+    # LB = mean - 1 * std
+    x = np.arange(len(mean))
+    print('T = {}'.format(len(mean)))
     plt.plot(x, mean, label=lbl, linewidth=line_width, marker=marker, linestyle=line_style, color=color)
     # plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5, color=color)
 
@@ -28,7 +29,7 @@ if __name__ == '__main__':
     # activate latex text rendering
     rc('text', usetex=True)
     root = os.getcwd()
-    cfg = root + '/plt_cfg.yaml'
+    cfg = root + '/../plt_cfg.yaml'
     plt_cfg = yaml.load(open(cfg), Loader=yaml.FullLoader)
 
     ylim_b = plt_cfg["ylim_b"]
