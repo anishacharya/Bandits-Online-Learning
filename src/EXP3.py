@@ -130,45 +130,46 @@ if __name__ == '__main__':
 
     # Run Different flavors of EXP3 Algorithms
     algos = ['exp3', 'exp3_ix', 'exp3_soft_clip', 'exp3_clip']
-    etas = [0.0001, 0.01, 0.01, 0.01]
+    etas = [0.0001, 0.01, 0.1, 1]
 
-    for algo, eta in zip(algos, etas):
-        print('running algo {}'.format(algo))
-        reg = run(avg=mu,
-                  iterations=num_iter,
-                  num_repeat=num_inst,
-                  eta=eta,
-                  algo=algo,
-                  Delta=Delta)
+    for algo in algos:
+        for eta in etas:
+            print('running algo {}'.format(algo))
+            reg = run(avg=mu,
+                      iterations=num_iter,
+                      num_repeat=num_inst,
+                      eta=eta,
+                      algo=algo,
+                      Delta=Delta)
 
-        mean_runs = np.mean(reg, axis=0)
-        std_runs = np.std(reg, axis=0)
+            mean_runs = np.mean(reg, axis=0)
+            std_runs = np.std(reg, axis=0)
 
-        expected_std = np.mean(std_runs)
-        total_regret = mean_runs[-1]
-        metrics = {
-            "mean_runs": mean_runs,
-            "std_runs": std_runs,
-            "eta": eta,
+            expected_std = np.mean(std_runs)
+            total_regret = mean_runs[-1]
+            metrics = {
+                "mean_runs": mean_runs,
+                "std_runs": std_runs,
+                "eta": eta,
 
-            "expected_std": expected_std,
-            "total_regret": total_regret
-        }
+                "expected_std": expected_std,
+                "total_regret": total_regret
+            }
 
-        # Save results
-        root = os.getcwd()
-        log_file = root + '/../' + algo + '.' + str(num_arms) + '.log'
-        print('Mean Cum Regret of {} : {}'.format(algo, mean_runs[-1]))
-        print('Std Cum Regret of {} : {}'.format(algo, np.mean(std_runs)))
-        with open(log_file, 'w+') as f:
-            json.dump(metrics, f, indent=4, ensure_ascii=False, cls=NumpyEncoder)
+            # Save results
+            root = os.getcwd()
+            log_file = root + '/../result_dumps/' + algo + '.' + str(num_arms) + '_' + str(eta) + '.log'
+            print('Mean Cum Regret of {} : {}'.format(algo, mean_runs[-1]))
+            print('Std Cum Regret of {} : {}'.format(algo, np.mean(std_runs)))
+            with open(log_file, 'w+') as f:
+                json.dump(metrics, f, indent=4, ensure_ascii=False, cls=NumpyEncoder)
 
-        UB = mean_runs + 3 * std_runs
-        LB = mean_runs - 3 * std_runs
+            UB = mean_runs + 3 * std_runs
+            LB = mean_runs - 3 * std_runs
 
-        x = np.arange(len(mean_runs))
-        plt.plot(x, mean_runs, label=algo)
-        # plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5)
+            x = np.arange(len(mean_runs))
+            plt.plot(x, mean_runs, label=algo)
+            # plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5)
 
     plt.legend()
     plt.xlabel('Time', fontsize=10)
