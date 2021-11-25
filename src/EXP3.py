@@ -134,7 +134,7 @@ if __name__ == '__main__':
 
     for algo in algos:
         for eta in etas:
-            print('running algo {}'.format(algo))
+            print('running algo {} for eta = {}'.format(algo, eta))
             reg = run(avg=mu,
                       iterations=num_iter,
                       num_repeat=num_inst,
