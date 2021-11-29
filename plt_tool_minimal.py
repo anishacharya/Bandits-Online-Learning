@@ -15,12 +15,12 @@ def plot_(lbl: str, res_file: str, line_width=4, marker=None, line_style=None, c
     mean = result["mean_runs"]
     std = result["std_runs"]
 
-    # UB = mean + 1 * std
-    # LB = mean - 1 * std
+    UB = [m + 1 * s for m, s in zip(mean, std)]
+    LB = [m - 1 * s for m, s in zip(mean, std)]
     x = np.arange(len(mean))
-    print('T = {}'.format(len(mean)))
+
     plt.plot(x, mean, label=lbl, linewidth=line_width, marker=marker, linestyle=line_style, color=color)
-    # plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5, color=color)
+    plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5, color=color)
 
 
 if __name__ == '__main__':
