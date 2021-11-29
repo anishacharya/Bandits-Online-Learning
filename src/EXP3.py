@@ -166,17 +166,17 @@ if __name__ == '__main__':
                 with open(log_file, 'w+') as f:
                     json.dump(metrics, f, indent=4, ensure_ascii=False, cls=NumpyEncoder)
 
-                UB = mean_runs + 3 * std_runs
-                LB = mean_runs - 3 * std_runs
+                # UB = mean_runs + 3 * std_runs
+                # LB = mean_runs - 3 * std_runs
+                #
+                # x = np.arange(len(mean_runs))
+                # plt.plot(x, mean_runs, label=algo)
+                # # plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5)
 
-                x = np.arange(len(mean_runs))
-                plt.plot(x, mean_runs, label=algo)
-                # plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5)
-
-    plt.legend()
-    plt.xlabel('Time', fontsize=10)
-    plt.ylabel('Cumulative Regret', fontsize=10)
-    # plt.xscale('log')
-    plt.grid(True, which='both', linestyle='--')
-
-    plt.show()
+    # plt.legend()
+    # plt.xlabel('Time', fontsize=10)
+    # plt.ylabel('Cumulative Regret', fontsize=10)
+    # # plt.xscale('log')
+    # plt.grid(True, which='both', linestyle='--')
+    #
+    # plt.show()
