@@ -52,7 +52,8 @@ class EXP3:
         # calculate and update P_t,j
         exp_wt = np.exp(- self.L * self.lr)
         self.P = exp_wt / sum(exp_wt)
-        self.p = np.nan_to_num(self.P)
+        if np.isnan(np.sum(self.P)):
+            self.P = np.nan_to_num(self.P)
 
     def update_stats(self, rew_vec):
 
@@ -126,8 +127,8 @@ if __name__ == '__main__':
     # eta = np.sqrt(np.log(mu.size) / (num_iter * mu.size))
 
     # Run Different flavors of EXP3 Algorithms
-    algos = ['exp3', 'exp3_ix', 'exp3_soft_clip', 'exp3_clip']
-    etas = [0.001, 0.01, 0.1, 1]
+    algos = ['exp3', 'exp3_ix', 'exp3_clip', 'exp3_soft_clip']
+    etas = [0.001, 0.01, 0.02]
 
     for num_arms in n_arms:
         mu = np.asarray([0.5] * num_arms)

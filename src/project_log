@@ -1,0 +1,28 @@
+running algo exp3; eta = 0.001; num arms = 10
+Mean Cum Regret of exp3 : 11712.6
+Std Cum Regret of exp3 : 521.880934504757
+running algo exp3_ix; eta = 0.001; num arms = 10
+Mean Cum Regret of exp3_ix : 9150.6
+Std Cum Regret of exp3_ix : 308.7717728403821
+running algo exp3_soft_clip; eta = 0.001; num arms = 10
+Mean Cum Regret of exp3_soft_clip : 9145.0
+Std Cum Regret of exp3_soft_clip : 170.48882399379164
+running algo exp3_clip; eta = 0.001; num arms = 10
+Mean Cum Regret of exp3_clip : 10105.6
+Std Cum Regret of exp3_clip : 397.99077182079793
+running algo exp3; eta = 0.01; num arms = 10
+Mean Cum Regret of exp3 : 4303.6
+Std Cum Regret of exp3 : 1481.318688867301
+running algo exp3_ix; eta = 0.01; num arms = 10
+Mean Cum Regret of exp3_ix : 2496.2
+Std Cum Regret of exp3_ix : 77.41940041344867
+running algo exp3_soft_clip; eta = 0.01; num arms = 10
+Mean Cum Regret of exp3_soft_clip : 1884.4
+Std Cum Regret of exp3_soft_clip : 95.40263504366541
+running algo exp3_clip; eta = 0.01; num arms = 10
+Mean Cum Regret of exp3_clip : 1689.8
+Std Cum Regret of exp3_clip : 105.49612215985401
+running algo exp3; eta = 0.1; num arms = 10
+running algo exp3; eta = 0.1; num arms = 10
+running algo exp3_ix; eta = 0.1; num arms = 10
+running algo exp3_soft_clip; eta = 0.1; num arms = 10
