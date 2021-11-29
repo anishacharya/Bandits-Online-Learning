@@ -127,7 +127,7 @@ if __name__ == '__main__':
 
     # Run Different flavors of EXP3 Algorithms
     algos = ['exp3', 'exp3_ix', 'exp3_soft_clip', 'exp3_clip']
-    etas = [0.0001, 0.01, 0.1, 1]
+    etas = [0.001, 0.01, 0.1, 1]
 
     for num_arms in n_arms:
         mu = np.asarray([0.5] * num_arms)
