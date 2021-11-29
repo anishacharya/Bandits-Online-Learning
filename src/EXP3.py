@@ -83,7 +83,7 @@ class EXP3:
         if self.reward_dist == 'normal':
             return self.true_means + np.random.normal(0, 0.01, np.shape(self.true_means))
         elif self.reward_dist == 'bin':
-            return np.random.binomial(n=1, p=self.true_means)
+            return np.random.binomial(n=10, p=self.true_means)
         else:
             raise NotImplementedError
 
@@ -128,7 +128,7 @@ if __name__ == '__main__':
 
     # Run Different flavors of EXP3 Algorithms
     algos = ['exp3', 'exp3_ix', 'exp3_clip', 'exp3_soft_clip']
-    etas = [0.001, 0.01, 0.02]
+    etas = [0.001, 0.01, 0.02, 0.025]
 
     for num_arms in n_arms:
         mu = np.asarray([0.5] * num_arms)

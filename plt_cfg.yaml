@@ -6,24 +6,24 @@
     "plots":
       [
         {
-          'file': '/Users/aa56927-admin/PycharmProjects/Bandits/result_dumps/OL_Project/exp3_clip.10_0.001.log',
-          'label': 'EXP3 C , lr = 0.001',
+          'file': '/Users/aa56927-admin/PycharmProjects/Bandits/result_dumps/OL_Project/exp3_clip.25_0.001.log',
+          'label': 'lr = 0.001',
           'line_width': 2,
           'marker': ,
           'line_style': 'solid',
           "clr": 'b',
         },
         {
-          'file': '/Users/aa56927-admin/PycharmProjects/Bandits/result_dumps/OL_Project/exp3_clip.10_0.01.log',
-          'label': 'EXP3 C , lr = 0.01',
+          'file': '/Users/aa56927-admin/PycharmProjects/Bandits/result_dumps/OL_Project/exp3_clip.25_0.01.log',
+          'label': 'lr = 0.01',
           'line_width': 2,
           'marker': ,
           'line_style': 'solid',
           "clr": 'r',
         },
         {
-          'file': '/Users/aa56927-admin/PycharmProjects/Bandits/result_dumps/OL_Project/exp3_clip.10_0.02.log',
-          'label': 'EXP3 C , lr = 0.02',
+          'file': '/Users/aa56927-admin/PycharmProjects/Bandits/result_dumps/OL_Project/exp3_clip.25_0.02.log',
+          'label': 'lr = 0.02',
           'line_width': 2,
           'marker': ,
           'line_style': 'solid',
