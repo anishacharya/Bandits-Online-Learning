@@ -123,12 +123,12 @@ if __name__ == '__main__':
     # Hyper Parameters
     n_arms = [10, 25, 50]
     Delta = 0.1
-    num_iter, num_inst = int(1e5), 5
+    num_iter, num_inst = int(1e5), 20
     # eta = np.sqrt(np.log(mu.size) / (num_iter * mu.size))
 
     # Run Different flavors of EXP3 Algorithms
-    algos = ['exp3', 'exp3_ix', 'exp3_clip', 'exp3_soft_clip']
-    etas = [0.001, 0.005, 0.01, 0.02, 0.05, 0.1]
+    algos = ['exp3']
+    etas = [0.001, 0.005, 0.01, 0.015, 0.02]
 
     for num_arms in n_arms:
         mu = np.asarray([0.5] * num_arms)
