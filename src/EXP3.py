@@ -81,7 +81,7 @@ class EXP3:
 
     def get_reward(self):
         if self.reward_dist == 'normal':
-            rew_vec = self.true_means + np.random.normal(0, 0.01, np.shape(self.true_means))
+            rew_vec = self.true_means + np.random.normal(0, 0.25, np.shape(self.true_means))
             rew_vec = np.clip(rew_vec, 0, 1)
             return rew_vec
 
@@ -130,13 +130,13 @@ if __name__ == '__main__':
     # Hyper Parameters
     n_arms = [10, 25, 50]
     Delta = 0.1
-    num_iter, num_inst = int(1e5), 10
+    num_iter, num_inst = int(1e5), 40
     # num_iter, num_inst = 5, 10
     # eta = np.sqrt(np.log(mu.size) / (num_iter * mu.size))
 
     # Run Different flavors of EXP3 Algorithms
-    algos = ['exp3', 'exp3_ix', 'exp3_clip', 'exp3_soft_clip']
-    etas = [0.001, 0.005, 0.01, 0.015, 0.02]
+    algos = ['exp3', ]
+    etas = [0.01]
 
     for num_arms in n_arms:
         mu = np.asarray([0.5] * num_arms)
