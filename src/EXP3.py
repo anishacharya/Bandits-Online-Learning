@@ -172,7 +172,8 @@ if __name__ == '__main__':
 
                 # Save results
                 root = os.getcwd()
-                log_file = root + '/../result_dumps/OL_Project/' + rew_dist + '/' + algo + '.' + str(num_arms) + '_' + str(eta) + '.log'
+                log_file = root + '/../result_dumps/OL_Project/' + rew_dist + '/' + algo + '.' \
+                           + str(num_arms) + '_' + str(eta) + '.log'
                 print('Mean Cum Regret of {} : {}'.format(algo, mean_runs[-1]))
                 print('Std Cum Regret of {} : {}'.format(algo, np.mean(std_runs)))
                 with open(log_file, 'w+') as f:
