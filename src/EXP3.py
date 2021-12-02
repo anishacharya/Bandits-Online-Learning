@@ -126,7 +126,7 @@ def run(avg, iterations, num_repeat, eta=0.001, algo='exp3', Delta: float = 0.1,
 
 if __name__ == '__main__':
 
-    rew_dist = 'bin'
+    rew_dist = 'normal'
     # Hyper Parameters
     n_arms = [10, 25, 50]
     Delta = 0.1
@@ -135,7 +135,7 @@ if __name__ == '__main__':
     # eta = np.sqrt(np.log(mu.size) / (num_iter * mu.size))
 
     # Run Different flavors of EXP3 Algorithms
-    algos = ['exp3_ix', 'exp3_clip', 'exp3_soft_clip']
+    algos = ['exp3', 'exp3_ix', 'exp3_clip', 'exp3_soft_clip']
     etas = [0.001, 0.005, 0.01, 0.015, 0.02]
 
     for num_arms in n_arms:
@@ -146,7 +146,7 @@ if __name__ == '__main__':
         for eta in etas:
             for algo in algos:
                 print('------------------------------------------')
-                print('running algo {}; eta = {}; num arms = {}'.format(algo, eta, num_arms))
+                print('running algo {}; eta = {}; num arms = {}; Reward = {}'.format(algo, eta, num_arms, rew_dist))
                 print('------------------------------------------')
                 reg = run(avg=mu,
                           iterations=num_iter,
