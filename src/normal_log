@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/aa56927-admin/PycharmProjects/Bandits/src/EXP3.py", line 178, in <module>
+    print('Std Cum Regret of {} : {}'.format(algo, np.mean(std_runs)))
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/aa56927-admin/PycharmProjects/Bandits/src/../result_dumps/OL_Project/normal/exp3.10_0.001.log'
