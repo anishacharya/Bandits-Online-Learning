@@ -37,7 +37,7 @@ class EXP3:
 
         self.time = 0
         self.L = np.array([0.0] * self.num_arms)  # S_t,j = initialize to zero
-        self.P = None  # P_t,j = initialized uniformly at t=0 by update_exp3()
+        self.P = np.array([1/self.num_arms] * self.num_arms)   # P_t,j = initialized uniformly at t=0 by update_exp3()
         self.arm_ix = None
 
         self.regret = []
@@ -52,8 +52,8 @@ class EXP3:
         # calculate and update P_t,j
         exp_wt = np.exp(- self.L * self.lr)
         self.P = exp_wt / sum(exp_wt)
-        if np.isnan(np.sum(self.P)):
-            self.P = np.nan_to_num(self.P)
+        # if np.isnan(np.sum(self.P)):
+        #     self.restart()
 
     def update_stats(self, rew_vec):
 
@@ -82,8 +82,9 @@ class EXP3:
     def get_reward(self):
         if self.reward_dist == 'normal':
             return self.true_means + np.random.normal(0, 0.01, np.shape(self.true_means))
+
         elif self.reward_dist == 'bin':
-            return np.random.binomial(n=10, p=self.true_means)
+            return np.random.binomial(n=1, p=self.true_means)
         else:
             raise NotImplementedError
 
@@ -93,6 +94,7 @@ class EXP3:
             self.best_arm = int(np.argmax(self.true_means))
 
         self.update_exp3()
+
         self.arm_ix = self.get_best_arm()
         rew_vec = self.get_reward()
         self.update_stats(rew_vec=rew_vec)
@@ -104,6 +106,7 @@ def run(avg, iterations, num_repeat, eta=0.001, algo='exp3', Delta: float = 0.1)
 
     for j in range(num_repeat):
         np.random.seed(j)
+        exp3.restart()
         for t in range(iterations):
             exp3.iterate()
 
@@ -123,7 +126,8 @@ if __name__ == '__main__':
     # Hyper Parameters
     n_arms = [10, 25, 50]
     Delta = 0.1
-    num_iter, num_inst = int(1e5), 20
+    num_iter, num_inst = int(1e5), 10
+    # num_iter, num_inst = 5, 10
     # eta = np.sqrt(np.log(mu.size) / (num_iter * mu.size))
 
     # Run Different flavors of EXP3 Algorithms
