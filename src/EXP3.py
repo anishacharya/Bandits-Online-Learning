@@ -37,7 +37,7 @@ class EXP3:
 
         self.time = 0
         self.L = np.array([0.0] * self.num_arms)  # S_t,j = initialize to zero
-        self.P = np.array([1/self.num_arms] * self.num_arms)   # P_t,j = initialized uniformly at t=0 by update_exp3()
+        self.P = np.array([1 / self.num_arms] * self.num_arms)  # P_t,j = initialized uniformly at t=0 by update_exp3()
         self.arm_ix = None
 
         self.regret = []
@@ -79,9 +79,12 @@ class EXP3:
 
         self.time += 1
 
-    def get_reward(self):
+    def get_reward(self, truncate=False):
         if self.reward_dist == 'normal':
-            return self.true_means + np.random.normal(0, 0.01, np.shape(self.true_means))
+            rew_vec = self.true_means + np.random.normal(0, 0.01, np.shape(self.true_means))
+            if truncate:
+                rew_vec = np.clip(rew_vec, 0, 1)
+            return rew_vec
 
         elif self.reward_dist == 'bin':
             return np.random.binomial(n=1, p=self.true_means)
@@ -100,9 +103,10 @@ class EXP3:
         self.update_stats(rew_vec=rew_vec)
 
 
-def run(avg, iterations, num_repeat, eta=0.001, algo='exp3', Delta: float = 0.1):
+def run(avg, iterations, num_repeat, eta=0.001, algo='exp3', Delta: float = 0.1, rew_dist='bin'):
     regret = np.zeros((num_repeat, iterations))
-    exp3 = EXP3(avg=avg, lr=eta, algo=algo, Delta=Delta)
+
+    exp3 = EXP3(avg=avg, lr=eta, algo=algo, Delta=Delta, reward_dist=rew_dist)
 
     for j in range(num_repeat):
         np.random.seed(j)
@@ -123,6 +127,7 @@ def run(avg, iterations, num_repeat, eta=0.001, algo='exp3', Delta: float = 0.1)
 
 if __name__ == '__main__':
 
+    rew_dist = 'bin'
     # Hyper Parameters
     n_arms = [10, 25, 50]
     Delta = 0.1
@@ -131,7 +136,7 @@ if __name__ == '__main__':
     # eta = np.sqrt(np.log(mu.size) / (num_iter * mu.size))
 
     # Run Different flavors of EXP3 Algorithms
-    algos = ['exp3']
+    algos = ['exp3_ix', 'exp3_clip', 'exp3_soft_clip']
     etas = [0.001, 0.005, 0.01, 0.015, 0.02]
 
     for num_arms in n_arms:
@@ -141,13 +146,16 @@ if __name__ == '__main__':
 
         for eta in etas:
             for algo in algos:
+                print('------------------------------------------')
                 print('running algo {}; eta = {}; num arms = {}'.format(algo, eta, num_arms))
+                print('------------------------------------------')
                 reg = run(avg=mu,
                           iterations=num_iter,
                           num_repeat=num_inst,
                           eta=eta,
                           algo=algo,
-                          Delta=Delta)
+                          Delta=Delta,
+                          rew_dist=rew_dist)
 
                 mean_runs = np.mean(reg, axis=0)
                 std_runs = np.std(reg, axis=0)
@@ -165,7 +173,7 @@ if __name__ == '__main__':
 
                 # Save results
                 root = os.getcwd()
-                log_file = root + '/../result_dumps/OL_Project/' + algo + '.' + str(num_arms) + '_' + str(eta) + '.log'
+                log_file = root + '/../result_dumps/OL_Project/' + rew_dist + '/' + algo + '.' + str(num_arms) + '_' + str(eta) + '.log'
                 print('Mean Cum Regret of {} : {}'.format(algo, mean_runs[-1]))
                 print('Std Cum Regret of {} : {}'.format(algo, np.mean(std_runs)))
                 with open(log_file, 'w+') as f:
