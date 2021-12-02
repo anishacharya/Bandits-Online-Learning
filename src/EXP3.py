@@ -79,11 +79,10 @@ class EXP3:
 
         self.time += 1
 
-    def get_reward(self, truncate=False):
+    def get_reward(self):
         if self.reward_dist == 'normal':
             rew_vec = self.true_means + np.random.normal(0, 0.01, np.shape(self.true_means))
-            if truncate:
-                rew_vec = np.clip(rew_vec, 0, 1)
+            rew_vec = np.clip(rew_vec, 0, 1)
             return rew_vec
 
         elif self.reward_dist == 'bin':
@@ -178,18 +177,3 @@ if __name__ == '__main__':
                 print('Std Cum Regret of {} : {}'.format(algo, np.mean(std_runs)))
                 with open(log_file, 'w+') as f:
                     json.dump(metrics, f, indent=4, ensure_ascii=False, cls=NumpyEncoder)
-
-                # UB = mean_runs + 3 * std_runs
-                # LB = mean_runs - 3 * std_runs
-                #
-                # x = np.arange(len(mean_runs))
-                # plt.plot(x, mean_runs, label=algo)
-                # # plt.fill_between(x, LB, UB, alpha=0.3, linewidth=0.5)
-
-    # plt.legend()
-    # plt.xlabel('Time', fontsize=10)
-    # plt.ylabel('Cumulative Regret', fontsize=10)
-    # # plt.xscale('log')
-    # plt.grid(True, which='both', linestyle='--')
-    #
-    # plt.show()
