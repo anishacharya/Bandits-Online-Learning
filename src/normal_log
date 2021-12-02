@@ -14,3 +14,16 @@ Traceback (most recent call last):
   File "mtrand.pyx", line 971, in numpy.random.mtrand.RandomState.choice
   File "<__array_function__ internals>", line 2, in count_nonzero
 KeyboardInterrupt
+/Users/aa56927-admin/PycharmProjects/Bandits/src/EXP3.py:54: RuntimeWarning: invalid value encountered in true_divide
+  self.P = exp_wt / sum(exp_wt)
+Traceback (most recent call last):
+  File "/Users/aa56927-admin/PycharmProjects/Bandits/src/EXP3.py", line 151, in <module>
+    reg = run(avg=mu,
+  File "/Users/aa56927-admin/PycharmProjects/Bandits/src/EXP3.py", line 114, in run
+    exp3.iterate()
+  File "/Users/aa56927-admin/PycharmProjects/Bandits/src/EXP3.py", line 100, in iterate
+    self.arm_ix = self.get_best_arm()
+  File "/Users/aa56927-admin/PycharmProjects/Bandits/src/EXP3.py", line 48, in get_best_arm
+    return np.random.choice(a=all_ix, size=1, replace=False, p=self.P)
+  File "mtrand.pyx", line 935, in numpy.random.mtrand.RandomState.choice
+ValueError: probabilities contain NaN
